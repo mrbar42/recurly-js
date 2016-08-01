@@ -229,12 +229,12 @@ Webhooks
 ========
 https://dev.recurly.com/page/webhooks
 
-A webhook handler is included for easing validation and parsing of webhooks.
+A `webhookParser` is included for easing validation and parsing of webhooks.
 the handler accepts 3 arguments `req` `res` `callback(err, webhook)`.
 The webhook data is also attached as `req.webhook`.
 
 If authorization was enabled when creating the webhook endpoint,
-the credentials must be provided as `WEBHOOKS_CREDENTIALS` to the config.
+the credentials must be provided as `WEBHOOKS_CREDENTIALS` in the config.
 
 Complete example:
 ```javascript
@@ -254,7 +254,7 @@ require('http').createServer(function (req, res) {
     return;
   }
 
-  recurly.webhooksHandler(req, res, function (err, webhook) {
+  recurly.webhookParser(req, res, function (err, webhook) {
     if (err) {
       // something went wrong
       console.error("Failed to process webhook", err);

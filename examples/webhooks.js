@@ -16,7 +16,7 @@ require('http').createServer(function (req, res) {
     return;
   }
 
-  recurly.webhooksHandler(req, res, function (err, webhook) {
+  recurly.webhookParser(req, res, function (err, webhook) {
     if (err) {
       // something went wrong
       console.error("Failed to process webhook", err);

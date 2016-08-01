@@ -11,6 +11,12 @@ module.exports = function(RECURLY_CONFIG) {
       continue;
     }
 
+    if (typeof recurly[section] === 'function') {
+      recurly[section + 'Callback'] = recurly[section];
+      recurly[section] = Promise.promisify(recurly[section]);
+      continue;
+    }
+
     for (var method in recurly[section]) {
       if (!recurly[section].hasOwnProperty(method)) {
         continue;

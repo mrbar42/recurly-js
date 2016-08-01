@@ -5,6 +5,26 @@ This is a fork of original `node-recurly` library by [Rob Righter](https://githu
 
 This library is intended to follow very closely the recurly documentation found at: [Recurly Docs](http://docs.recurly.com/)
 
+Index
+=====
+
+- [Installation](#installation)
+- [Usage Examples](#installation)
+- Routes
+  - [Accounts](#accounts)
+  - [Billing Information](#billing-information)
+  - [Adjustments](#adjustments)
+  - [Coupons](#COUPONS)
+  - [Coupon Redemption](#coupon-redemption)
+  - [Invoices](#Invoices)
+  - [Subscriptions](#subscriptions)
+  - [Subscription Plans](#subscription-plans)
+  - [Plan Add-ons](#plan-add-ons)
+  - [Transactions](#transactions)
+  - [Usage Records](#usage-records)
+  
+- [Custom api calls](#custom-api-calls)
+- [Webhooks](#webhooks)
 
 Installation
 ===============
@@ -99,7 +119,7 @@ http://docs.recurly.com/api/coupons
     recurly.coupons.deactivate(couponcode, callback)
 	
 
-Coupon Redemtion
+Coupon Redemption
 =================
 http://docs.recurly.com/api/coupons/coupon-redemption
   
@@ -203,4 +223,49 @@ var options = {
 };
 
 recurly.api(options, callback)
+```
+
+Webhooks
+========
+https://dev.recurly.com/page/webhooks
+
+A webhook handler is included for easing validation and parsing of webhooks.
+the handler accepts 3 arguments `req` `res` `callback(err, webhook)`.
+The webhook data is also attached as `req.webhook`.
+
+If authorization was enabled when creating the webhook endpoint,
+the credentials must be provided as `WEBHOOKS_CREDENTIALS` to the config.
+
+Complete example:
+```javascript
+var Recurly = require('../');
+var recurly = new Recurly({
+  API_KEY: '',
+  SUBDOMAIN: '',
+  ENVIRONMENT: 'sandbox',
+  API_VERSION: 2,
+  WEBHOOKS_CREDENTIALS: 'testUser:TestPassword'
+});
+
+require('http').createServer(function (req, res) {
+  if (req.url !== '/webhooks/endpoint') {
+    req.writeHead(404);
+    req.end();
+    return;
+  }
+
+  recurly.webhooksHandler(req, res, function (err, webhook) {
+    if (err) {
+      // something went wrong
+      console.error("Failed to process webhook", err);
+      req.writeHead(500);
+      req.end();
+      return;
+    }
+    console.log(webhook.name); // 'new_invoice_notification'
+    console.log(webhook.body); // {account: {...}, invoice: {...}}
+
+    req.end();
+  });
+}).listen(80);
 ```
